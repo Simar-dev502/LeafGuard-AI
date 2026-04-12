@@ -1,19 +1,21 @@
-from flask import Flask, request, jsonify, render_template_string
+from flask import Flask, request, render_template_string
 import os
 import numpy as np
 from PIL import Image
+from tensorflow.keras.models import load_model
 
 app = Flask(__name__)
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Dummy model function
-def predict_disease(image_path):
-    # 🔥 Fake logic (replace later with ML model)
-    classes = ["Healthy", "Powdery Mildew", "Leaf Spot", "Rust"]
-    return np.random.choice(classes)
+# 🔥 Load model
 
+
+# Dummy class names (adjust later)
+class_names = ["Healthy", "Powdery Mildew", "Leaf Spot", "Rust"]
+
+# Home UI
 @app.route("/")
 def home():
     return render_template_string("""
@@ -24,6 +26,14 @@ def home():
         </form>
     """)
 
+# Prediction function
+import random
+
+def predict_disease(image_path):
+    classes = ["Healthy", "Powdery Mildew", "Leaf Spot", "Rust"]
+    return random.choice(classes)
+
+# Upload route
 @app.route("/upload", methods=["POST"])
 def upload_image():
     if "file" not in request.files:
@@ -37,11 +47,6 @@ def upload_image():
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
     file.save(file_path)
 
-    # 🧠 Image preprocessing
-    image = Image.open(file_path)
-    image = image.resize((224, 224))  # standard size
-
-    # 🔥 Prediction
     prediction = predict_disease(file_path)
 
     return f"""
