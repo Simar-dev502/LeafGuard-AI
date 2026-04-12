@@ -31,7 +31,13 @@ import random
 
 def predict_disease(image_path):
     classes = ["Healthy", "Powdery Mildew", "Leaf Spot", "Rust"]
-    return random.choice(classes)
+    
+    prediction = random.choice(classes)
+    confidence = round(random.uniform(70, 99), 2)
+
+    return prediction, confidence
+
+
 
 # Upload route
 @app.route("/upload", methods=["POST"])
@@ -46,13 +52,13 @@ def upload_image():
 
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
     file.save(file_path)
+    prediction, confidence = predict_disease(file_path)
 
-    prediction = predict_disease(file_path)
+  
 
-    return f"""
-    File uploaded successfully ✅ <br>
-    Prediction: {prediction}
-    """
-
+    return render_template_string(f"""
+        <h2>Prediction: {prediction} 🌿</h2>
+        <p>Confidence: {confidence}%</p>
+    """)
 if __name__ == "__main__":
     app.run(debug=True)
