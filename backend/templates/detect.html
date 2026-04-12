@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="upload">
+
+<h2>Detect Plant Disease</h2>
+
+<form method="POST" action="/upload" enctype="multipart/form-data">
+    <input type="file" name="file" required>
+    <button type="submit">Analyze</button>
+</form>
+
+</section>
+
+{% if prediction %}
+
+<section class="result">
+<div class="left">
+    <h2>{{ prediction }}</h2>
+
+    {% if filename %}
+        <img src="{{ url_for('uploaded_file', filename=filename) }}?v={{ confidence }}" width="200">
+    {% else %}
+        <p>No image found</p>
+    {% endif %}
+
+    <p>Confidence: {{ confidence }}%</p>
+</div>
+
+<div class="right">
+
+<h3>Description</h3>
+<p>
+{{ description }}
+</p>
+
+<h3>Prevention</h3>
+<p>
+{{ prevention }}
+</p>
+</p>
+
+
+</div>
+
+</section>
+
+{% endif %}
+
+{% endblock %}
