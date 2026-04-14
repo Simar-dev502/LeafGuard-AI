@@ -1,49 +1,66 @@
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 {% extends "base.html" %}
 {% block content %}
 
-<!-- HERO SLIDER -->
+<!-- 🔥 LOADER -->
+
+<div class="loader" id="loader">
+    <h1>🌿 Loading LeafGuardAI...</h1>
+</div>
+
+<!-- 🔥 HERO SECTION -->
+
 <section class="hero">
 
-    <div class="slider">
-        <img src="/static/images/leaf 1.jpg" class="slide active">
-        <img src="/static/images/leaf 2.jpg" class="slide">
-        <img src="/static/images/leaf 3.jpg" class="slide">
-    </div>
+```
+<div class="slider">
+    <img src="/static/images/leaf 1.jpg" class="slide active">
+    <img src="/static/images/leaf 2.jpg" class="slide">
+    <img src="/static/images/leaf 3.jpg" class="slide">
+</div>
 
-    <div class="hero-text">
-        <h1>Smart Plant Disease Detection</h1>
-        <p>Upload leaf images & detect diseases instantly</p>
-        <a href="/detect"><button>Get Started</button></a>
-    </div>
+<!-- 🤖 AI BADGE -->
+<div class="ai-badge">🤖 AI Powered</div>
+
+<div class="hero-text">
+    <h1>Smart Plant Disease Detection</h1>
+    <p>Upload leaf images & detect diseases instantly</p>
+    <a href="/detect"><button>Get Started</button></a>
+</div>
+```
 
 </section>
 
-<!-- EXAMPLES / FEEDBACK -->
-<section class="feedback">
+<!-- 🔥 FEEDBACK / EXAMPLES -->
 
+<section class="feedback">
     <h2>Predicted Results</h2>
 
-    <div class="feedback-grid">
+```
+<div class="feedback-grid">
 
-        <div class="card">
-            <img src="/static/images/leaf 4.jpg">
-            <h3>Tomato Leaf Spot</h3>
-            <p>Detected with 92% confidence</p>
-        </div>
-
-        <div class="card">
-            <img src="/static/images/leaf 5.jpg">
-            <h3>Healthy Leaf</h3>
-            <p>Detected with 98% confidence</p>
-        </div>
-
-        <div class="card">
-            <img src="/static/images/leaf 6.jpg">
-            <h3>Rust Disease</h3>
-            <p>Detected with 89% confidence</p>
-        </div>
-
+    <div class="card">
+        <img src="/static/images/leaf 4.jpg">
+        <h3>Tomato Leaf Spot</h3>
+        <p>Detected with 92% confidence</p>
     </div>
+
+    <div class="card">
+        <img src="/static/images/leaf 5.jpg">
+        <h3>Healthy Leaf</h3>
+        <p>Detected with 98% confidence</p>
+    </div>
+
+    <div class="card">
+        <img src="/static/images/leaf 6.jpg">
+        <h3>Rust Disease</h3>
+        <p>Detected with 89% confidence</p>
+    </div>
+
+</div>
+```
 
 </section>
 
