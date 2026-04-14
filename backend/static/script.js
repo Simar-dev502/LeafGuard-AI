@@ -1,33 +1,39 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    // 🔥 SLIDER
-    let index = 0;
-    const slides = document.querySelectorAll(".slide");
+// 🔥 SLIDER
+let index = 0;
+const slides = document.querySelectorAll(".slide");
 
-    if (slides.length > 0) {
-        setInterval(() => {
-            slides[index].classList.remove("active");
+if (slides.length > 0) {
+    setInterval(() => {
+        slides[index].classList.remove("active");
+        index = (index + 1) % slides.length;
+        slides[index].classList.add("active");
+    }, 3500);
+}
 
-            index = (index + 1) % slides.length;
+// 🔥 SCROLL ANIMATION
+const elements = document.querySelectorAll(".card, .hero-text");
 
-            slides[index].classList.add("active");
-        }, 3000);
-    }
-
-    // 🔥 SCROLL FUNCTIONS
-    window.scrollToUpload = function () {
-        const section = document.getElementById("upload");
-        if (section) {
-            section.scrollIntoView({ behavior: "smooth" });
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add("show");
         }
-    };
+    });
+});
 
-    window.scrollToContact = function () {
-        const section = document.getElementById("contact");
-        if (section) {
-            section.scrollIntoView({ behavior: "smooth" });
-        }
-    };
+elements.forEach(el => observer.observe(el));
+
+// 🔥 PARALLAX EFFECT
+window.addEventListener("scroll", () => {
+    const scroll = window.scrollY;
+    document.querySelector(".hero").style.transform = `translateY(${scroll * 0.2}px)`;
+
+
+
+});
+
 
     // 🔥 IMAGE PREVIEW
     const fileInput = document.getElementById("fileInput");
@@ -44,4 +50,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+});
+
+window.addEventListener("load", () => {
+const loader = document.getElementById("loader");
+loader.style.display = "none";
 });
