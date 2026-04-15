@@ -5,3 +5,4 @@ pillow
 gunicorn
 gtts
 requests
+openai

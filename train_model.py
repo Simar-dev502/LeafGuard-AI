@@ -2,7 +2,6 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras import layers, models
-
 # 📁 dataset path
 DATASET_PATH = "dataset"
 
@@ -52,5 +51,11 @@ model.fit(train_data, validation_data=val_data, epochs=8     )
 
 # 💾 Save model
 model.save("plant_disease_model.h5")
+print("✅ Model training complete!"
+       )
+import pickle
 
-print("✅ Model training complete!")
+class_names = list(train_data.class_indices.keys())
+
+with open("class_names.pkl", "wb") as f:
+    pickle.dump(class_names, f)

@@ -2,9 +2,9 @@ tfenv/
 venv/
 __pycache__/
 *.pyc
-uploads/
-dataset/
-plant_disease_model.h5
+
+
+
 
 
 
