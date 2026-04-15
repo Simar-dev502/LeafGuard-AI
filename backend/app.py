@@ -6,6 +6,8 @@ import requests
 from tensorflow.keras.models import load_model
 import numpy as np
 from PIL import Image
+import pickle
+import openai
 
 app = Flask(__name__)
 
@@ -16,47 +18,55 @@ STATIC_AUDIO_FOLDER = "static/audio"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(STATIC_AUDIO_FOLDER, exist_ok=True)
 
-# 🔥 Load trained model
+# 🔥 Load model
 model = load_model("plant_disease_model.h5")
 
-# 🔥 Class names (dataset ke folder names)
-class_names = [
-    "Apple___Black_rot",
-    "Apple___healthy",
-    "Corn___Cercospora_leaf_spot",
-    "Corn___healthy",
-    "Grape___Black_rot",
-    "Grape___healthy",
-    "Potato___Early_blight",
-    "Potato___Late_blight",
-    "Potato___healthy",
-    "Tomato___Leaf_Mold",
-    "Tomato___Septoria_leaf_spot",
-    "Tomato___healthy"
-]
+# 🔥 Load class names
+class_names = pickle.load(open("class_names.pkl", "rb"))
 
-# 🔥 Disease info
-disease_info = {
-    "Apple___Black_rot": {
-        "description": "Fungal disease causing dark lesions on apple leaves.",
-        "prevention": "Remove infected leaves and apply fungicide."
-    },
-    "Tomato___Leaf_Mold": {
-        "description": "Yellow spots on upper leaves, mold underneath.",
-        "prevention": "Avoid humidity and improve air circulation."
-    },
-    "Potato___Early_blight": {
-        "description": "Dark spots with concentric rings.",
-        "prevention": "Use fungicide and remove infected plants."
-    }
-}
+# 🔥 OpenAI key (yaha apni key daalna)
+openai.api_key = "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"
 
+# 🔥 AI Description Function
+def get_ai_description(disease):
+
+    disease = disease.lower()
+
+    description = ""
+    prevention = ""
+
+    if "mold" in disease:
+        description = "Leaf mold is a fungal disease that appears as yellow spots on leaves."
+        prevention = "Reduce humidity, improve air circulation and use fungicide."
+
+    elif "blight" in disease:
+        description = "Blight causes dark spots and rapid damage to plant leaves."
+        prevention = "Remove infected leaves and apply fungicide."
+
+    elif "rust" in disease:
+        description = "Rust disease forms orange or brown powdery spots on leaves."
+        prevention = "Use resistant plant varieties and apply fungicide."
+
+    elif "spot" in disease:
+        description = "Leaf spot causes dark circular patches on leaves."
+        prevention = "Avoid overwatering and remove infected parts."
+
+    elif "healthy" in disease:
+        description = "The plant appears healthy with no visible disease."
+        prevention = "Maintain proper watering and sunlight."
+
+    else:
+        description = "This disease is not clearly identified."
+        prevention = "Try uploading a clearer image or consult an expert."
+
+    return description, prevention
+     
 # 🔥 Serve uploaded image
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
 
-# 🔥 REAL prediction function
+# 🔥 Prediction
 def predict_disease(image_path):
     img = Image.open(image_path).convert("RGB")
     img = img.resize((224, 224))
@@ -69,11 +79,17 @@ def predict_disease(image_path):
     class_index = np.argmax(predictions)
     confidence = round(np.max(predictions) * 100, 2)
 
-    prediction = class_names[class_index]
+    if class_index < len(class_names):
+        prediction = class_names[class_index]
+    else:
+        prediction = "Unknown Disease"
 
-    return prediction, confidence
+    # clean name
+    clean_prediction = prediction.replace("___", " ").replace("_", " ")
 
-# 🔥 AI fallback
+    return clean_prediction, confidence
+
+# 🔥 AI fallback (optional)
 def ai_fallback(image_path):
     try:
         url = "https://api.plant.id/v2/identify"
@@ -117,26 +133,23 @@ def upload_image():
     file_path = os.path.join(UPLOAD_FOLDER, unique_filename)
     file.save(file_path)
 
-    # 🔥 Real model prediction
+    # 🔥 Prediction
     prediction, confidence = predict_disease(file_path)
 
-    # 🔥 fallback (real-world handling)
+    # 🔥 fallback
     if confidence < 60:
         prediction, confidence = ai_fallback(file_path)
 
-    # 🔥 dynamic info
-    info = disease_info.get(prediction, {
-        "description": "This disease is not in our dataset.",
-        "prevention": "Try uploading a clearer plant leaf image."
-    })
+    # 🔥 AI description
+    description, prevention = get_ai_description(prediction)
 
     return render_template(
         "detect.html",
         prediction=prediction,
         confidence=confidence,
         filename=unique_filename,
-        description=info["description"],
-        prevention=info["prevention"]
+        description=description,
+        prevention=prevention
     )
 
 # 🎤 Text-to-Speech
@@ -152,7 +165,6 @@ def speak():
     tts.save(file_path)
 
     return {"audio": f"/static/audio/{filename}"}
-
 
 if __name__ == "__main__":
     app.run(debug=True)
